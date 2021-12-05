@@ -12,6 +12,11 @@ struct Movement {
 }
 
 fn main() {
+    part_1();
+    part_2();
+}
+
+fn part_1(){
     let contents = fs::read_to_string("input")
         .expect("Error while reading file");
 
@@ -34,6 +39,34 @@ fn main() {
     println!("Vertical: {}", vertical);
     println!("Total distance: {}", horizontal * vertical);
 }
+
+fn part_2(){
+    let contents = fs::read_to_string("input")
+        .expect("Error while reading file");
+
+    let mut aim = 0;
+    let mut horizontal = 0;
+    let mut vertical = 0;
+
+    for line in contents.lines() {
+        let split: Vec<&str> = line.split(' ').collect();
+
+        let movement = vector_to_movement(split);
+
+        match movement.direction {
+            Direction::Forward => { horizontal += movement.distance; 
+                vertical += aim * movement.distance;
+            },
+            Direction::Up => { aim -= movement.distance },
+            Direction::Down => { aim += movement.distance },
+        }
+    }
+
+    println!("Horizontal: {}", horizontal);
+    println!("Vertical: {}", vertical);
+    println!("Total distance: {}", horizontal * vertical);
+}
+
 
 fn vector_to_movement(vector: Vec<&str>) -> Movement {
     let direction = match vector[0] {
