@@ -11,6 +11,7 @@ struct Movement {
     distance: i32
 }
 
+// https://adventofcode.com/2021/day/2
 fn main() {
     part_1();
     part_2();
