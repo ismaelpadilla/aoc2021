@@ -90,6 +90,7 @@ impl Board {
 
 fn main() {
     part_1();
+    part_2();
 }
 
 fn part_1() {
@@ -132,6 +133,65 @@ fn part_1() {
                     let unmarked_sum = board.sum_unmarked();
                     println!("score: {}", unmarked_sum*number);
                     break 'outer;
+                }
+            }
+        }
+    }
+    // for board in boards.iter() {
+    //     println!("{:?}\n", board);
+    // }
+}
+
+fn part_2() {
+    let contents = fs::read_to_string("input").expect("Error while reading file");
+
+    let mut lines = contents.lines();
+    let first_line = lines.next().expect("There should be at least one line");
+    // consume blank line:
+    lines.next();
+
+    let numbers: Vec<u32> = first_line.split(",").map(|n| n.parse().unwrap()).collect();
+
+    let mut boards: Vec<Board> = Vec::new();
+
+    let lines_collected: Vec<&str> = lines.collect();
+    let lines_chunks = lines_collected.chunks(6);
+    for chunk in lines_chunks {
+        // println!("{}", chunk[0]);
+        // println!("{}", chunk[1]);
+        // println!("{}", chunk[2]);
+        // println!("{}", chunk[3]);
+        // println!("{}", chunk[4]);
+        let board = Board {
+            board: [
+                BingoNumber::line_to_bingo_number_array(chunk[0]),
+                BingoNumber::line_to_bingo_number_array(chunk[1]),
+                BingoNumber::line_to_bingo_number_array(chunk[2]),
+                BingoNumber::line_to_bingo_number_array(chunk[3]),
+                BingoNumber::line_to_bingo_number_array(chunk[4]),
+            ],
+        };
+        boards.push(board);
+    }
+
+    let mut completed_boards = 0u32;
+    let total_boards: u32 = boards.len().try_into().unwrap();
+    let mut completed = vec!(false; boards.len()); 
+
+    'outer: for number in numbers {
+        for (boardnr, board) in boards.iter_mut().enumerate() {
+            if board.check_number(number) {
+                if !completed[boardnr] && board.is_complete() {
+                    completed[boardnr] = true;
+                    completed_boards += 1;
+                    println!("board {} complete. {} boards completed so far", boardnr, completed_boards);
+
+                    if completed_boards == total_boards { 
+                        println!("This was the last board");
+                        let unmarked_sum = board.sum_unmarked();
+                        println!("score: {}", unmarked_sum*number);
+                        break 'outer;
+                    }
                 }
             }
         }
