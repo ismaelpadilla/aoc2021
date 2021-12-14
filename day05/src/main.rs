@@ -6,8 +6,8 @@ use std::{
 
 // https://adventofcode.com/2021/day/5
 fn main() {
-    part_1();
-    // part_2();
+    // part_1();
+    part_2();
 }
 
 fn part_1() {
@@ -52,6 +52,70 @@ fn part_1() {
     println!("Intersections: {}", sum);
 }
 
+fn part_2() {
+    let contents = fs::read_to_string("input").expect("Error while reading file");
+    let mut map: HashMap<(u32, u32), u32> = HashMap::new();
+
+    let mut count: u32 = 0;
+    for line in contents.lines() {
+        let coords = parse_line(line);
+
+        // redundant if :)
+        if coords[0].0 == coords[1].0 || coords[0].1 == coords[1].1 {
+            // println!("inserting {}", line);
+            if coords[0].0 == coords[1].0 {
+                // equal x coordinate
+                for i in min(coords[0].1, coords[1].1)..=max(coords[0].1, coords[1].1) {
+                    // println!("inserting {},{}", coords[0].0, i);
+                    // insert_into_map(&mut map, (coords[0].0, i));
+                    if insert_into_map(&mut map, (coords[0].0, i)) == 2 {
+                        count += 1;
+                    }
+                }
+            } else if coords[0].1 == coords[1].1 {
+                // equal y coordinate
+                for i in min(coords[0].0, coords[1].0)..=max(coords[0].0, coords[1].0) {
+                    // println!("inserting {},{}", i, coords[1].1);
+                    // insert_into_map(&mut map, (i, coords[1].1));
+                    if insert_into_map(&mut map, (i, coords[1].1)) == 2 {
+                        count += 1;
+                    }
+                }
+            }
+            // println!("{},{}", coords[0].0, coords[0].1);
+            // println!("{},{}\n", coords[1].0, coords[1].1);
+        } else {
+            // println!("inserting {}", line);
+            let x_increasing = if coords[1].0 < coords[0].0 { false } else { true };
+            let y_increasing = if coords[1].1 < coords[0].1 { false } else { true };
+
+            let mut x = coords[0].0;
+            let end_x = coords[1].0;
+            let mut y = coords[0].1;
+            let end_y = coords[1].1;
+
+            while x != end_x && y != end_y {
+                // println!("inserting {},{}", x, y);
+                if insert_into_map(&mut map, (x, y)) == 2 {
+                    count += 1;
+                }
+                if x_increasing { x += 1; } else { x -= 1; }
+                if y_increasing { y += 1; } else { y -= 1; }
+            }
+            // nothing to see here
+            if insert_into_map(&mut map, (x, y)) == 2 {
+                count += 1;
+            }
+        }
+    }
+
+    println!("Count: {}", count);
+    
+    // unnecessary double check :)
+    let sum: u32 = map.values().filter(|v| v > &&1).map(|_| 1).sum();
+    println!("Intersections: {}", sum);
+}
+//
 // insert 1 into map if key doesn't exist, otherwise increment value by 1
 fn insert_into_map(map: &mut HashMap<(u32, u32), u32>, key: (u32, u32)) -> u32 {
     // could be otpimized with unwrap_or(0)
