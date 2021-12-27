@@ -47,3 +47,30 @@ fn insert_ordered(positions: &mut Vec<i32>, position: i32) {
     positions.push(position);
 }
 
+fn part_2() {
+    let mut positions: Vec<i32> = Vec::new();
+
+    let contents = fs::read_to_string("input").expect("Error while reading file");
+
+    for crabs in contents.trim().split(',') {
+        let position: i32 = crabs.parse().expect("Couldn't parse number");
+
+        positions.push(position);
+    }
+
+    // find average
+    let length = positions.len();
+    
+    let average: i32 = positions.iter().sum::<i32>() / positions.len() as i32;
+
+    let mut cost = 0;
+
+    for i in positions {
+        let distance = (average-i).abs();
+        cost += (distance * (distance + 1)) / 2;
+    }
+
+    println!("average: {}", average);
+    println!("total crabs: {}", length);
+    println!("Fuel cost: {}", cost);
+}
